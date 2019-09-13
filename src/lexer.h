@@ -64,6 +64,18 @@ public:
         // 4. lastCharがEOFでない場合、行末まで読み込んだので次のトークンに進むためにgettok()をreturnする。
         //
         // ここに実装して下さい
+        if (lastChar == '#')
+        {
+            lastChar = getNextChar(iFile);
+            while (lastChar != EOF && lastChar != '\n')
+            {
+                lastChar = getNextChar(iFile);
+            }
+            if (lastChar == '\n')
+            {
+                return gettok();
+            }
+        }
 
         // EOFならtok_eofを返す
         if (iFile.eof())
