@@ -149,7 +149,7 @@ static std::unique_ptr<ExprAST> ParseParenExpr()
     {
         return LogError("corresponding ) is missing");
     }
-
+    getNextToken();
     return parsedToken;
 }
 
@@ -175,7 +175,7 @@ static std::unique_ptr<ExprAST> ParseBinOpRHS(int CallerPrec,
                                               std::unique_ptr<ExprAST> LHS)
 {
     // 課題を解く時はこの行を消して下さい。
-    return LHS;
+    //return LHS;
     while (true)
     {
         // 1. 現在の二項演算子の結合度を取得する。 e.g. int tokprec = GetTokPrecedence();
@@ -202,6 +202,27 @@ static std::unique_ptr<ExprAST> ParseBinOpRHS(int CallerPrec,
 
         // LHS, RHSをBinaryASTにしてLHSに代入する。
         //LHS = llvm::make_unique<BinaryAST>(BinOp, std::move(LHS), std::move(RHS));
+        int tokprec = GetTokPrecedence();
+
+        if (tokprec < CallerPrec)
+        {
+            return LHS;
+        }
+
+        int BinOp = CurTok;
+
+        getNextToken();
+
+        auto RHS = ParsePrimary();
+
+        int NextPrec = GetTokPrecedence();
+        if (tokprec < NextPrec)
+        {
+            RHS = ParseBinOpRHS(tokprec + 1, std::move(RHS));
+            if (!RHS)
+                return nullptr;
+        }
+        LHS = llvm::make_unique<BinaryAST>(BinOp, std::move(LHS), std::move(RHS));
     }
 }
 

@@ -46,7 +46,6 @@ public:
         if (isdigit(lastChar))
         {
             std::string str = "";
-            std::int32_t count = 1;
             str += lastChar;
             while (isdigit(lastChar = getNextChar(iFile)))
             {
